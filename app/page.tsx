@@ -27,12 +27,16 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchBikes() {
-      const { data, error } = await supabase.from('bikes').select('*');
+      try {
+        const { data, error } = await supabase.from('bikes').select('*');
 
-      if (error) {
-        console.error('Error fetching bikes:', error);
-      } else {
-        setBikes(data || []);
+        if (error) {
+          console.error('Error fetching bikes:', error);
+        } else {
+          setBikes(data || []);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching bikes:', err);
       }
     }
 
@@ -122,11 +126,14 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute inset-0 bg-emerald-500/30 blur-xl rounded-full group-hover:bg-emerald-500/50 transition" />
 
-                <div className="relative w-12 h-12 rounded-2xl bg-slate-950 p-1 border border-slate-800 shadow-xl overflow-hidden">
+                <div className="relative w-12 h-12 rounded-2xl bg-slate-950 p-1 border border-slate-800 shadow-xl overflow-hidden flex items-center justify-center">
                   <img
                     src="/logo/bikefinderlogo.jpeg"
                     alt="BikeFinder Logo"
                     className="w-full h-full object-cover rounded-xl"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/window.svg';
+                    }}
                   />
                 </div>
               </div>
@@ -316,7 +323,7 @@ export default function Home() {
                   <div className="absolute top-10 right-10 w-40 h-40 border border-white/5 rounded-full" />
                   <div className="absolute bottom-10 left-10 w-56 h-56 border border-emerald-500/10 rounded-full" />
 
-                  {bikes.length > 0 ? (
+                  {bikes.length > 0 && bikes[0].image_url ? (
                     <img
                       src={bikes[0].image_url}
                       alt={bikes[0].name}
@@ -599,12 +606,16 @@ export default function Home() {
 
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(16,185,129,0.08),_transparent_65%)]" />
 
-                      <div className="absolute inset-x-0 top-10 bottom-0 flex items-center justify-center">
-                        <img
-                          src={bike.image_url}
-                          alt={bike.name}
-                          className="relative z-10 max-w-[90%] max-h-[82%] object-contain group-hover:scale-110 group-hover:-rotate-1 transition-transform duration-700 ease-out drop-shadow-2xl"
-                        />
+                      <div className="absolute inset-x-0 top-10 bottom-0 flex items-center justify-center p-4">
+                        {bike.image_url ? (
+                          <img
+                            src={bike.image_url}
+                            alt={bike.name}
+                            className="relative z-10 max-w-[90%] max-h-[82%] object-contain group-hover:scale-110 group-hover:-rotate-1 transition-transform duration-700 ease-out drop-shadow-2xl"
+                          />
+                        ) : (
+                          <div className="text-6xl opacity-20">🏍️</div>
+                        )}
                       </div>
                     </div>
 
@@ -792,11 +803,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 p-1">
+              <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 p-1 flex items-center justify-center">
                 <img
                   src="/logo/bikefinderlogo.jpeg"
                   alt="BikeFinder"
                   className="w-full h-full rounded-lg object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/window.svg';
+                  }}
                 />
               </div>
 
@@ -834,12 +848,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* CENTERED COPYRIGHT SECTION */}
           <div className="border-t border-white/10 mt-10 pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs text-slate-500 text-center">
-              <p>
-                © 2026 BikeFinder. All rights reserved.
-              </p>
+              <p>© {new Date().getFullYear()} BikeFinder. All rights reserved.</p>
 
               <span className="hidden sm:block w-px h-5 bg-white/10" />
 
