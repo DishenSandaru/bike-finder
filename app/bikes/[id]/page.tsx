@@ -71,7 +71,14 @@ export default function BikeDetailPage() {
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">
       <header className="flex justify-between items-center mb-8">
         <Link href="/" className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-emerald-600"><span className="w-9 h-9 rounded-full bg-white border flex items-center justify-center">←</span><span className="hidden sm:inline">Back to All Bikes</span></Link>
-        <Link href="/" className="flex items-center gap-2"><img src="/logo/bikefinderlogo.jpeg" alt="BikeFinder" className="w-11 h-11 rounded-xl object-cover border" /><span className="text-lg font-black">BIKE<span className="text-emerald-500">FINDER</span></span></Link>
+        <Link href="/" className="flex items-center gap-2">
+          <img 
+            src="https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/bikefinderlogo.jpeg" 
+            alt="BikeFinder" 
+            className="w-11 h-11 rounded-xl object-cover border" 
+          />
+          <span className="text-lg font-black">BIKE<span className="text-emerald-500">FINDER</span></span>
+        </Link>
       </header>
 
       <section className="bg-white rounded-[2rem] border shadow-xl overflow-hidden mb-10">
