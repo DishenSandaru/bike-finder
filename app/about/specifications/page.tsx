@@ -52,7 +52,6 @@ export default function SpecificationsPage() {
                 Compare
               </Link>
 
-              {/* FIXED ROUTE */}
               <Link
                 href="/about/specifications"
                 className="text-sm font-bold text-emerald-600"
@@ -72,6 +71,30 @@ export default function SpecificationsPage() {
           </div>
         </div>
       </header>
+
+      {/* =====================================================
+          QUICK NAVIGATION
+      ===================================================== */}
+      <div className="sticky top-20 z-40 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-hide">
+
+            <span className="hidden sm:inline-flex shrink-0 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400 mr-2">
+              Jump to
+            </span>
+
+            <QuickNavLink href="#guide" icon="📖" label="Guide" />
+            <QuickNavLink href="#differences" icon="🔍" label="Why Specs Differ" />
+            <QuickNavLink href="#methodology" icon="✓" label="Methodology" />
+            <QuickNavLink href="#accuracy" icon="◈" label="Accuracy" />
+            <QuickNavLink href="#sources" icon="⌁" label="Sources" />
+            <QuickNavLink href="#disclaimer" icon="⚠️" label="Disclaimer" />
+
+          </div>
+
+        </div>
+      </div>
 
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-16">
@@ -117,6 +140,13 @@ export default function SpecificationsPage() {
               Why Specs Differ
             </a>
 
+            <a
+              href="#guide"
+              className="bg-white border border-slate-200 px-6 py-3.5 rounded-xl font-bold hover:border-emerald-400 transition"
+            >
+              Specification Guide
+            </a>
+
           </div>
         </div>
       </section>
@@ -159,13 +189,14 @@ export default function SpecificationsPage() {
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
       {/* Why Specs Differ */}
       <section
         id="differences"
-        className="py-20 sm:py-24 bg-white/70 border-y border-slate-200/70"
+        className="scroll-mt-36 py-20 sm:py-24 bg-white/70 border-y border-slate-200/70"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -296,10 +327,232 @@ export default function SpecificationsPage() {
         </div>
       </section>
 
+      {/* =====================================================
+          MOTORCYCLE SPECIFICATION GUIDE
+      ===================================================== */}
+      <section
+        id="guide"
+        className="scroll-mt-36 py-20 sm:py-28 bg-[#f7f9f8] border-y border-slate-200/70"
+      >
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="max-w-3xl">
+
+            <span className="text-xs font-black text-emerald-600 tracking-[0.2em] uppercase">
+              Motorcycle Technology Guide
+            </span>
+
+            <h2 className="text-4xl sm:text-5xl font-black mt-4 tracking-tight">
+              What do these motorcycle
+              <span className="text-emerald-600"> specifications mean?</span>
+            </h2>
+
+            <p className="text-slate-500 leading-7 mt-5">
+              Not familiar with motorcycle terminology? This quick guide
+              explains common braking, engine, suspension and performance
+              technologies in simple language.
+            </p>
+
+          </div>
+
+          {/* Guide cards */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-12">
+
+            <GuideCard
+              icon="🛑"
+              category="BRAKING"
+              title="What is a Disc Brake?"
+              text="A disc brake uses a brake disc and caliper to slow the wheel. Disc brakes generally provide strong braking performance and effective heat dissipation."
+              accent="emerald"
+            />
+
+            <GuideCard
+              icon="⭕"
+              category="BRAKING"
+              title="What is a Drum Brake?"
+              text="A drum brake uses brake shoes that press against the inside of a rotating drum. It is a simple and widely used braking system, especially on some rear wheels."
+              accent="slate"
+            />
+
+            <GuideCard
+              icon="⚡"
+              category="SAFETY"
+              title="What is ABS?"
+              text="Anti-lock Braking System helps reduce wheel lock-up during hard braking by automatically adjusting brake pressure, helping the rider maintain control."
+              accent="blue"
+            />
+
+            <GuideCard
+              icon="🔗"
+              category="SAFETY"
+              title="What is CBS?"
+              text="Combined Braking System distributes braking force between the front and rear brakes when the braking system is operated, depending on the motorcycle's design."
+              accent="cyan"
+            />
+
+            <GuideCard
+              icon="🧲"
+              category="ELECTRONICS"
+              title="What is Traction Control?"
+              text="Traction control monitors wheel behaviour and can reduce engine torque when excessive rear-wheel slip is detected, helping maintain traction."
+              accent="violet"
+            />
+
+            <GuideCard
+              icon="🔥"
+              category="ENGINE"
+              title="What is Horsepower?"
+              text="Horsepower is a measurement of engine power. It describes how quickly an engine can perform work and is commonly associated with high-speed performance."
+              accent="orange"
+            />
+
+            <GuideCard
+              icon="🔩"
+              category="ENGINE"
+              title="What is Torque?"
+              text="Torque is rotational force produced by the engine. It contributes to acceleration and the motorcycle's ability to pull under different riding conditions."
+              accent="emerald"
+            />
+
+            <GuideCard
+              icon="🏍️"
+              category="SUSPENSION"
+              title="What is Motorcycle Suspension?"
+              text="Suspension connects the wheels to the motorcycle while helping absorb bumps and maintain tyre contact with the road."
+              accent="blue"
+            />
+
+            <GuideCard
+              icon="↕️"
+              category="SUSPENSION"
+              title="What is USD Suspension?"
+              text="Upside-Down suspension places the larger fork tubes at the top and the thinner tubes near the wheel. It is common on performance-oriented motorcycles."
+              accent="violet"
+            />
+
+            <GuideCard
+              icon="⚙️"
+              category="SUSPENSION"
+              title="What is a Monoshock?"
+              text="A monoshock is a single rear suspension unit. It can offer controlled handling and allows manufacturers to design the rear suspension around a central shock."
+              accent="cyan"
+            />
+
+            <GuideCard
+              icon="🔄"
+              category="TRANSMISSION"
+              title="What is a Manual Transmission?"
+              text="A manual motorcycle transmission uses selectable gears controlled by the rider, normally through a gear lever and clutch."
+              accent="slate"
+            />
+
+            <GuideCard
+              icon="🌡️"
+              category="ENGINE"
+              title="What is Liquid Cooling?"
+              text="Liquid cooling uses coolant and a radiator to help control engine temperature, especially when the engine is working hard."
+              accent="blue"
+            />
+
+            <GuideCard
+              icon="🌬️"
+              category="ENGINE"
+              title="What is Air Cooling?"
+              text="Air cooling uses airflow around the engine to remove heat. It is a simple system commonly found on smaller and simpler motorcycles."
+              accent="orange"
+            />
+
+            <GuideCard
+              icon="💨"
+              category="ENGINE"
+              title="What is Fuel Injection?"
+              text="Fuel injection electronically controls how much fuel enters the engine. It can improve throttle response, efficiency and starting compared with older carbureted systems."
+              accent="emerald"
+            />
+
+            <GuideCard
+              icon="🔧"
+              category="ENGINE"
+              title="What is a Carburetor?"
+              text="A carburetor mixes fuel with incoming air before the mixture enters the engine. It is a traditional fuel-delivery system still found on some motorcycles."
+              accent="slate"
+            />
+
+            <GuideCard
+              icon="🔋"
+              category="ELECTRONICS"
+              title="What is Ride-by-Wire?"
+              text="Ride-by-wire replaces a traditional mechanical throttle connection with electronic throttle control, allowing the ECU to manage throttle opening more precisely."
+              accent="violet"
+            />
+
+            <GuideCard
+              icon="📈"
+              category="PERFORMANCE"
+              title="What is Top Speed?"
+              text="Top speed is the highest speed a motorcycle can reach under particular conditions. It can vary with rider weight, wind, road conditions, gearing and testing method."
+              accent="blue"
+            />
+
+            <GuideCard
+              icon="⚖️"
+              category="PERFORMANCE"
+              title="What is Power-to-Weight Ratio?"
+              text="Power-to-weight ratio compares engine power with motorcycle weight. It can help provide context for acceleration and overall performance."
+              accent="cyan"
+            />
+
+            <GuideCard
+              icon="🛞"
+              category="TYRES"
+              title="What is Tyre Size?"
+              text="Tyre size describes the tyre's width, profile and wheel diameter. The correct tyre specification affects handling, grip and compatibility."
+              accent="emerald"
+            />
+
+          </div>
+
+          {/* Important note */}
+          <div className="mt-10 bg-slate-950 rounded-[2rem] p-7 sm:p-10 text-white relative overflow-hidden">
+
+            <div className="absolute -right-24 -bottom-24 w-72 h-72 bg-emerald-500/20 blur-3xl rounded-full" />
+
+            <div className="relative flex flex-col md:flex-row gap-6 md:items-center">
+
+              <div className="w-14 h-14 shrink-0 rounded-2xl bg-emerald-500/15 border border-emerald-400/20 flex items-center justify-center text-2xl">
+                💡
+              </div>
+
+              <div className="flex-1">
+
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-emerald-400">
+                  Remember
+                </p>
+
+                <h3 className="text-2xl font-black mt-2">
+                  More specification does not always mean a better motorcycle.
+                </h3>
+
+                <p className="text-slate-400 leading-7 mt-3">
+                  Motorcycle performance depends on how different components
+                  work together. Engine power, torque, weight, gearing,
+                  suspension, brakes, tyres and electronics should be
+                  considered as a complete package.
+                </p>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* Methodology */}
       <section
         id="methodology"
-        className="py-20 sm:py-28 bg-slate-950 text-white"
+        className="scroll-mt-36 py-20 sm:py-28 bg-slate-950 text-white"
       >
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -353,7 +606,10 @@ export default function SpecificationsPage() {
       </section>
 
       {/* Accuracy Levels */}
-      <section className="py-20 sm:py-28">
+      <section
+        id="accuracy"
+        className="scroll-mt-36 py-20 sm:py-28"
+      >
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -418,7 +674,10 @@ export default function SpecificationsPage() {
       </section>
 
       {/* Sources */}
-      <section className="py-20 sm:py-24 bg-white border-y border-slate-200">
+      <section
+        id="sources"
+        className="scroll-mt-36 py-20 sm:py-24 bg-white border-y border-slate-200"
+      >
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -470,7 +729,10 @@ export default function SpecificationsPage() {
       </section>
 
       {/* Disclaimer */}
-      <section className="py-20">
+      <section
+        id="disclaimer"
+        className="scroll-mt-36 py-20"
+      >
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -605,7 +867,6 @@ export default function SpecificationsPage() {
                 Compare
               </Link>
 
-              {/* FIXED ROUTE */}
               <Link
                 href="/about/specifications"
                 className="text-emerald-400"
@@ -629,9 +890,34 @@ export default function SpecificationsPage() {
 }
 
 
-/* -------------------------------------------------------
-   Reusable Components
-------------------------------------------------------- */
+/* =======================================================
+   QUICK NAVIGATION
+======================================================= */
+
+function QuickNavLink({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: string;
+  label: string;
+}) {
+  return (
+    <a
+      href={href}
+      className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-slate-50 border border-slate-200 text-xs font-bold text-slate-600 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 active:scale-95 transition-all"
+    >
+      <span>{icon}</span>
+      <span>{label}</span>
+    </a>
+  );
+}
+
+
+/* =======================================================
+   INFO CARD
+======================================================= */
 
 function InfoCard({
   icon,
@@ -662,6 +948,115 @@ function InfoCard({
 }
 
 
+/* =======================================================
+   SPECIFICATION GUIDE CARD
+======================================================= */
+
+function GuideCard({
+  icon,
+  category,
+  title,
+  text,
+  accent,
+}: {
+  icon: string;
+  category: string;
+  title: string;
+  text: string;
+  accent:
+    | 'emerald'
+    | 'slate'
+    | 'blue'
+    | 'cyan'
+    | 'violet'
+    | 'orange';
+}) {
+
+  const accentStyles = {
+    emerald: {
+      icon: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+      category: 'text-emerald-600',
+      hover: 'hover:border-emerald-200',
+    },
+    slate: {
+      icon: 'bg-slate-50 text-slate-700 border-slate-200',
+      category: 'text-slate-600',
+      hover: 'hover:border-slate-300',
+    },
+    blue: {
+      icon: 'bg-blue-50 text-blue-600 border-blue-100',
+      category: 'text-blue-600',
+      hover: 'hover:border-blue-200',
+    },
+    cyan: {
+      icon: 'bg-cyan-50 text-cyan-600 border-cyan-100',
+      category: 'text-cyan-600',
+      hover: 'hover:border-cyan-200',
+    },
+    violet: {
+      icon: 'bg-violet-50 text-violet-600 border-violet-100',
+      category: 'text-violet-600',
+      hover: 'hover:border-violet-200',
+    },
+    orange: {
+      icon: 'bg-orange-50 text-orange-600 border-orange-100',
+      category: 'text-orange-600',
+      hover: 'hover:border-orange-200',
+    },
+  };
+
+  const styles = accentStyles[accent];
+
+  return (
+    <article
+      className={`group bg-white border border-slate-200 rounded-[1.75rem] p-6 sm:p-7 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${styles.hover}`}
+    >
+
+      <div className="flex items-start justify-between gap-4">
+
+        <div
+          className={`w-14 h-14 rounded-2xl border flex items-center justify-center text-2xl shrink-0 ${styles.icon}`}
+        >
+          {icon}
+        </div>
+
+        <span
+          className={`text-[10px] font-black tracking-[0.16em] uppercase pt-2 ${styles.category}`}
+        >
+          {category}
+        </span>
+
+      </div>
+
+      <h3 className="text-xl font-black mt-6 leading-tight">
+        {title}
+      </h3>
+
+      <p className="text-sm text-slate-500 leading-6 mt-3">
+        {text}
+      </p>
+
+      <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          BikeFinder Guide
+        </span>
+
+        <span className="text-slate-300 group-hover:text-emerald-500 transition">
+          →
+        </span>
+
+      </div>
+
+    </article>
+  );
+}
+
+
+/* =======================================================
+   EXAMPLE BOX
+======================================================= */
+
 function ExampleBox({
   label,
   value,
@@ -690,6 +1085,10 @@ function ExampleBox({
   );
 }
 
+
+/* =======================================================
+   METHODOLOGY CARD
+======================================================= */
 
 function MethodCard({
   number,
@@ -725,6 +1124,10 @@ function MethodCard({
   );
 }
 
+
+/* =======================================================
+   ACCURACY CARD
+======================================================= */
 
 function AccuracyCard({
   symbol,
@@ -768,6 +1171,10 @@ function AccuracyCard({
   );
 }
 
+
+/* =======================================================
+   SOURCE ROW
+======================================================= */
 
 function SourceRow({
   number,
