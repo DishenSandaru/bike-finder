@@ -20,7 +20,7 @@ export default function SpecificationsPage() {
 
             <Link href="/" className="flex items-center gap-3">
               <img
-                src="/logo/bikefinderlogo.jpeg"
+                src="https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/bikefinderlogo.jpeg"
                 alt="BikeFinder"
                 className="w-12 h-12 rounded-2xl object-cover border border-slate-200"
               />
@@ -72,9 +72,7 @@ export default function SpecificationsPage() {
         </div>
       </header>
 
-      {/* =====================================================
-          QUICK NAVIGATION
-      ===================================================== */}
+      {/* QUICK NAVIGATION */}
       <div className="sticky top-20 z-40 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -327,9 +325,7 @@ export default function SpecificationsPage() {
         </div>
       </section>
 
-      {/* =====================================================
-          MOTORCYCLE SPECIFICATION GUIDE
-      ===================================================== */}
+      {/* MOTORCYCLE SPECIFICATION GUIDE */}
       <section
         id="guide"
         className="scroll-mt-36 py-20 sm:py-28 bg-[#f7f9f8] border-y border-slate-200/70"
@@ -889,20 +885,11 @@ export default function SpecificationsPage() {
   );
 }
 
-
 /* =======================================================
-   QUICK NAVIGATION
+    HELPER COMPONENTS
 ======================================================= */
 
-function QuickNavLink({
-  href,
-  icon,
-  label,
-}: {
-  href: string;
-  icon: string;
-  label: string;
-}) {
+function QuickNavLink({ href, icon, label }: { href: string; icon: string; label: string }) {
   return (
     <a
       href={href}
@@ -914,302 +901,77 @@ function QuickNavLink({
   );
 }
 
-
-/* =======================================================
-   INFO CARD
-======================================================= */
-
-function InfoCard({
-  icon,
-  title,
-  text,
-}: {
-  icon: string;
-  title: string;
-  text: string;
-}) {
+function InfoCard({ icon, title, text }: { icon: string; title: string; text: string }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 hover:-translate-y-1 hover:shadow-xl transition-all">
-
-      <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl">
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-xl mb-4">
         {icon}
       </div>
-
-      <h3 className="text-lg font-black mt-6">
-        {title}
-      </h3>
-
-      <p className="text-sm text-slate-500 leading-6 mt-3">
-        {text}
-      </p>
-
+      <h3 className="font-bold text-lg text-slate-900">{title}</h3>
+      <p className="text-xs text-slate-500 leading-5 mt-2">{text}</p>
     </div>
   );
 }
 
-
-/* =======================================================
-   SPECIFICATION GUIDE CARD
-======================================================= */
-
-function GuideCard({
-  icon,
-  category,
-  title,
-  text,
-  accent,
-}: {
-  icon: string;
-  category: string;
-  title: string;
-  text: string;
-  accent:
-    | 'emerald'
-    | 'slate'
-    | 'blue'
-    | 'cyan'
-    | 'violet'
-    | 'orange';
-}) {
-
-  const accentStyles = {
-    emerald: {
-      icon: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-      category: 'text-emerald-600',
-      hover: 'hover:border-emerald-200',
-    },
-    slate: {
-      icon: 'bg-slate-50 text-slate-700 border-slate-200',
-      category: 'text-slate-600',
-      hover: 'hover:border-slate-300',
-    },
-    blue: {
-      icon: 'bg-blue-50 text-blue-600 border-blue-100',
-      category: 'text-blue-600',
-      hover: 'hover:border-blue-200',
-    },
-    cyan: {
-      icon: 'bg-cyan-50 text-cyan-600 border-cyan-100',
-      category: 'text-cyan-600',
-      hover: 'hover:border-cyan-200',
-    },
-    violet: {
-      icon: 'bg-violet-50 text-violet-600 border-violet-100',
-      category: 'text-violet-600',
-      hover: 'hover:border-violet-200',
-    },
-    orange: {
-      icon: 'bg-orange-50 text-orange-600 border-orange-100',
-      category: 'text-orange-600',
-      hover: 'hover:border-orange-200',
-    },
-  };
-
-  const styles = accentStyles[accent];
-
+function ExampleBox({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <article
-      className={`group bg-white border border-slate-200 rounded-[1.75rem] p-6 sm:p-7 shadow-sm hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${styles.hover}`}
-    >
+    <div className="bg-white border border-slate-200 rounded-xl p-4 text-center">
+      <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">{label}</span>
+      <p className="text-xl font-black text-slate-800 mt-1">{value}</p>
+      <p className="text-xs text-slate-500 mt-1">{note}</p>
+    </div>
+  );
+}
 
-      <div className="flex items-start justify-between gap-4">
+function GuideCard({ icon, category, title, text, accent }: { icon: string; category: string; title: string; text: string; accent: string }) {
+  return (
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-2xl">{icon}</span>
+        <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 bg-slate-50 px-2.5 py-1 rounded-full border">{category}</span>
+      </div>
+      <h3 className="font-bold text-base text-slate-900">{title}</h3>
+      <p className="text-xs text-slate-500 leading-5 mt-2">{text}</p>
+    </div>
+  );
+}
 
-        <div
-          className={`w-14 h-14 rounded-2xl border flex items-center justify-center text-2xl shrink-0 ${styles.icon}`}
-        >
-          {icon}
+function MethodCard({ number, title, text }: { number: string; title: string; text: string }) {
+  return (
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+      <span className="text-xs font-black text-emerald-400">{number}</span>
+      <h3 className="font-bold text-lg text-white mt-2">{title}</h3>
+      <p className="text-xs text-slate-400 leading-5 mt-2">{text}</p>
+    </div>
+  );
+}
+
+function AccuracyCard({ symbol, title, description, badge, badgeClass, iconClass }: { symbol: string; title: string; description: string; badge: string; badgeClass: string; iconClass: string }) {
+  return (
+    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg ${iconClass}`}>
+          {symbol}
         </div>
-
-        <span
-          className={`text-[10px] font-black tracking-[0.16em] uppercase pt-2 ${styles.category}`}
-        >
-          {category}
-        </span>
-
+        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${badgeClass}`}>{badge}</span>
       </div>
-
-      <h3 className="text-xl font-black mt-6 leading-tight">
-        {title}
-      </h3>
-
-      <p className="text-sm text-slate-500 leading-6 mt-3">
-        {text}
-      </p>
-
-      <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
-
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-          BikeFinder Guide
-        </span>
-
-        <span className="text-slate-300 group-hover:text-emerald-500 transition">
-          →
-        </span>
-
-      </div>
-
-    </article>
-  );
-}
-
-
-/* =======================================================
-   EXAMPLE BOX
-======================================================= */
-
-function ExampleBox({
-  label,
-  value,
-  note,
-}: {
-  label: string;
-  value: string;
-  note: string;
-}) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5">
-
-      <p className="text-[10px] font-black tracking-[0.15em] text-slate-400">
-        {label}
-      </p>
-
-      <p className="text-2xl font-black mt-3">
-        {value}
-      </p>
-
-      <p className="text-xs text-slate-500 mt-2">
-        {note}
-      </p>
-
+      <h3 className="font-bold text-base text-slate-900">{title}</h3>
+      <p className="text-xs text-slate-500 leading-5 mt-2">{description}</p>
     </div>
   );
 }
 
-
-/* =======================================================
-   METHODOLOGY CARD
-======================================================= */
-
-function MethodCard({
-  number,
-  title,
-  text,
-}: {
-  number: string;
-  title: string;
-  text: string;
-}) {
+function SourceRow({ number, title, description, priority }: { number: string; title: string; description: string; priority: string }) {
   return (
-    <div className="bg-white/[0.04] border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition">
-
-      <div className="flex items-center justify-between">
-
-        <span className="text-emerald-400 text-sm font-black">
-          {number}
-        </span>
-
-        <span className="w-8 h-px bg-white/20" />
-
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200/70">
+      <div className="flex items-center gap-4">
+        <span className="text-xs font-black text-slate-400">{number}</span>
+        <div>
+          <h4 className="font-bold text-sm text-slate-900">{title}</h4>
+          <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+        </div>
       </div>
-
-      <h3 className="text-xl font-black mt-7">
-        {title}
-      </h3>
-
-      <p className="text-sm text-slate-400 leading-6 mt-3">
-        {text}
-      </p>
-
-    </div>
-  );
-}
-
-
-/* =======================================================
-   ACCURACY CARD
-======================================================= */
-
-function AccuracyCard({
-  symbol,
-  title,
-  description,
-  badge,
-  badgeClass,
-  iconClass,
-}: {
-  symbol: string;
-  title: string;
-  description: string;
-  badge: string;
-  badgeClass: string;
-  iconClass: string;
-}) {
-  return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm hover:shadow-xl transition">
-
-      <div
-        className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black ${iconClass}`}
-      >
-        {symbol}
-      </div>
-
-      <h3 className="font-black text-lg mt-6">
-        {title}
-      </h3>
-
-      <p className="text-sm text-slate-500 leading-6 mt-3 min-h-[72px]">
-        {description}
-      </p>
-
-      <span
-        className={`inline-flex mt-5 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-wide ${badgeClass}`}
-      >
-        {badge}
-      </span>
-
-    </div>
-  );
-}
-
-
-/* =======================================================
-   SOURCE ROW
-======================================================= */
-
-function SourceRow({
-  number,
-  title,
-  description,
-  priority,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  priority: string;
-}) {
-  return (
-    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row gap-5 sm:items-center">
-
-      <div className="w-12 h-12 shrink-0 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-sm font-black">
-        {number}
-      </div>
-
-      <div className="flex-1">
-
-        <h3 className="font-black">
-          {title}
-        </h3>
-
-        <p className="text-sm text-slate-500 mt-1 leading-6">
-          {description}
-        </p>
-
-      </div>
-
-      <span className="self-start sm:self-center bg-white border border-slate-200 rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-slate-500">
-        {priority}
-      </span>
-
+      <span className="self-start sm:self-auto text-[10px] font-bold uppercase tracking-wider bg-white border px-3 py-1 rounded-full text-slate-600">{priority}</span>
     </div>
   );
 }

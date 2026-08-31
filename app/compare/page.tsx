@@ -196,7 +196,7 @@ export default function ComparePage() {
               className="flex items-center gap-3"
             >
               <img
-                src="/logo/bikefinderlogo.jpeg"
+                src="https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/bikefinderlogo.jpeg"
                 alt="BikeFinder"
                 className="w-12 h-12 rounded-2xl object-cover border border-slate-200"
               />

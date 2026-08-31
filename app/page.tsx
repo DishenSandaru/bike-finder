@@ -147,7 +147,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-20 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
-              <img src="/logo/bikefinderlogo.jpeg" alt="BikeFinder" className="w-12 h-12 rounded-2xl object-cover border border-slate-200" />
+              <img 
+                src="https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/bikefinderlogo.jpeg" 
+                alt="BikeFinder" 
+                className="w-12 h-12 rounded-2xl object-cover border border-slate-200" 
+              />
               <div><p className="text-xl sm:text-2xl font-black">BIKE<span className="text-emerald-500">FINDER</span></p><p className="text-[10px] text-slate-400 font-semibold tracking-wide">DISCOVER. COMPARE. RIDE.</p></div>
             </Link>
             <nav className="hidden lg:flex items-center gap-8">
