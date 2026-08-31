@@ -179,7 +179,7 @@ export default function Home() {
             <button onClick={() => scrollTo('explore-bikes')} className="bg-white border px-7 py-4 rounded-2xl font-bold">Explore Motorcycles →</button>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-14">
-            {[[''+bikes.length+'+', 'Motorcycles'], [''+Math.max(0, brands.length-1)+'+', 'Brands'], ['100%', 'Free to Explore'], ['24/7', 'Always Available']].map(([a,b]) => <div key={b} className="bg-white border rounded-2xl p-5 shadow-sm"><p className="text-2xl sm:text-3xl font-black">{a}</p><p className="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">{b}</p></div>)}
+            {[['' + bikes.length + '+', 'Motorcycles'], ['' + Math.max(0, brands.length - 1) + '+', 'Brands'], ['100%', 'Free to Explore'], ['24/7', 'Always Available']].map(([a, b]) => <div key={b} className="bg-white border rounded-2xl p-5 shadow-sm"><p className="text-2xl sm:text-3xl font-black">{a}</p><p className="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">{b}</p></div>)}
           </div>
         </div>
       </section>
@@ -190,9 +190,9 @@ export default function Home() {
           <h2 className="text-3xl sm:text-5xl font-black mt-3">Browse by Category</h2>
           <p className="text-slate-500 mt-4 max-w-xl">Explore motorcycles by riding style and category.</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-10">
-            {['Sport','Naked','Adventure','Cruiser','Scooter','Touring'].map((type, i) => (
+            {['Sport', 'Naked', 'Adventure', 'Cruiser', 'Scooter', 'Touring'].map((type, i) => (
               <button key={type} onClick={() => { setSelectedType(type); scrollTo('explore-bikes'); }} className="bg-white border rounded-2xl p-5 text-left hover:border-emerald-500 hover:-translate-y-1 transition">
-                <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-2xl">{['🏎️','⚡','🌍','🔥','🛵','🛣️'][i]}</div>
+                <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-2xl">{['🏎️', '⚡', '🌍', '🔥', '🛵', '🛣️'][i]}</div>
                 <p className="font-black mt-4">{type}</p><p className="text-xs text-slate-400 mt-1">Explore bikes →</p>
               </button>
             ))}
@@ -263,29 +263,114 @@ export default function Home() {
           <h2 className="text-4xl sm:text-5xl font-black mt-4">Research motorcycles.<br /><span className="text-emerald-400">Make better comparisons.</span></h2>
           <p className="text-slate-400 mt-5 max-w-2xl leading-8">BikeFinder focuses on specifications, useful filters and transparent comparisons that work for riders anywhere in the world.</p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
-            {[['🔎','Advanced Search','Filter motorcycles by technical specifications, not location-specific pricing.'],['✦','Smart Finder','Answer a few questions and get database-powered matches.'],['⚖️','Better Comparison','See differences and category winners at a glance.'],['🌍','Global Focus','A specification-first motorcycle research platform for riders everywhere.']].map(([i,t,d]) => <div key={t} className="bg-white/[0.04] border border-white/10 rounded-3xl p-6"><div className="text-2xl">{i}</div><h3 className="font-black text-lg mt-6">{t}</h3><p className="text-sm text-slate-400 leading-6 mt-3">{d}</p></div>)}
+            {[['🔎', 'Advanced Search', 'Filter motorcycles by technical specifications, not location-specific pricing.'], ['✦', 'Smart Finder', 'Answer a few questions and get database-powered matches.'], ['⚖️', 'Better Comparison', 'See differences and category winners at a glance.'], ['🌍', 'Global Focus', 'A specification-first motorcycle research platform for riders everywhere.']].map(([i, t, d]) => <div key={t} className="bg-white/[0.04] border border-white/10 rounded-3xl p-6"><div className="text-2xl">{i}</div><h3 className="font-black text-lg mt-6">{t}</h3><p className="text-sm text-slate-400 leading-6 mt-3">{d}</p></div>)}
           </div>
         </div>
       </section>
 
       <footer className="bg-slate-950 border-t border-white/10 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-5 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} BikeFinder. All rights reserved.</p><p>Developed with <span className="text-emerald-400">♥</span> by <b className="text-slate-300">Dishen</b></p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+
+            {/* Brand */}
+            <div className="text-center md:text-left">
+              <p className="font-black text-lg">
+                BIKE<span className="text-emerald-400">FINDER</span>
+              </p>
+
+              <p className="text-xs text-slate-500 mt-1">
+                Discover. Compare. Ride.
+              </p>
+            </div>
+
+            {/* Footer Navigation */}
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs font-semibold">
+
+              <Link
+                href="/"
+                className="text-slate-500 hover:text-emerald-400 transition"
+              >
+                Home
+              </Link>
+
+              <button
+                onClick={() => scrollTo('explore-bikes')}
+                className="text-slate-500 hover:text-emerald-400 transition"
+              >
+                Explore Bikes
+              </button>
+
+              <Link
+                href="/compare"
+                className="text-slate-500 hover:text-emerald-400 transition"
+              >
+                Compare
+              </Link>
+
+              {/* Specification Guide */}
+              <Link
+                href="/about/specifications"
+                className="text-slate-500 hover:text-emerald-400 transition"
+              >
+                Specification Guide
+              </Link>
+
+            </div>
+
+            {/* Specs & Data Sources */}
+            <Link
+              href="/about/specifications"
+              className="group flex items-center gap-3 bg-white/[0.04] border border-white/10 hover:border-emerald-400/40 px-4 py-3 rounded-xl transition-all"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 group-hover:animate-pulse" />
+
+              <div>
+                <p className="text-xs font-bold text-slate-300 group-hover:text-emerald-400 transition">
+                  Specs & Data Sources
+                </p>
+
+                <p className="text-[10px] text-slate-600 mt-0.5">
+                  Accuracy & methodology →
+                </p>
+              </div>
+            </Link>
+
+          </div>
+
+          {/* Bottom */}
+          <div className="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+
+            <p>
+              © {new Date().getFullYear()} BikeFinder. All rights reserved.
+            </p>
+
+            <p>
+              Developed with{' '}
+              <span className="text-emerald-400">♥</span>{' '}
+              by{' '}
+              <b className="text-slate-300">
+                Dishen
+              </b>
+            </p>
+
+          </div>
+
         </div>
       </footer>
 
       {showFinder && <div className="fixed inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl overflow-hidden">
-          <div className="p-6 sm:p-8 border-b flex justify-between items-start"><div><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">BikeFinder Smart Finder</p><h3 className="text-2xl sm:text-3xl font-black mt-2">Find bikes that fit your riding style.</h3><p className="text-sm text-slate-500 mt-2">Uses the specifications already in your BikeFinder database.</p></div><button onClick={() => {setShowFinder(false); setFinderStep(1);}} className="w-10 h-10 rounded-xl bg-slate-100">✕</button></div>
+          <div className="p-6 sm:p-8 border-b flex justify-between items-start"><div><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">BikeFinder Smart Finder</p><h3 className="text-2xl sm:text-3xl font-black mt-2">Find bikes that fit your riding style.</h3><p className="text-sm text-slate-500 mt-2">Uses the specifications already in your BikeFinder database.</p></div><button onClick={() => { setShowFinder(false); setFinderStep(1); }} className="w-10 h-10 rounded-xl bg-slate-100">✕</button></div>
           <div className="p-6 sm:p-8">
             {finderStep <= 4 ? <><p className="text-xs font-bold text-slate-400 mb-5">STEP {finderStep} OF 4</p>
-              {finderStep === 1 && <Question title="What will you mainly use it for?" options={['Daily','Sport','Touring','Adventure','City']} value={finder.purpose} onChange={v => setFinder({...finder, purpose: v as FinderAnswers['purpose']})} />}
-              {finderStep === 2 && <Question title="How experienced are you?" options={['Beginner','Intermediate','Experienced']} value={finder.experience} onChange={v => setFinder({...finder, experience: v as FinderAnswers['experience']})} />}
-              {finderStep === 3 && <Question title="What matters most to you?" options={['Performance','Economy','Safety','Comfort']} value={finder.priority} onChange={v => setFinder({...finder, priority: v as FinderAnswers['priority']})} />}
-              {finderStep === 4 && <Question title="Preferred engine range?" options={['Any','125','150','200','250+']} value={finder.engine} onChange={v => setFinder({...finder, engine: v as FinderAnswers['engine']})} />}
-              <div className="flex justify-between mt-8"><button disabled={finderStep === 1} onClick={() => setFinderStep(s => s-1)} className="px-5 py-3 rounded-xl border font-bold disabled:opacity-30">Back</button><button onClick={() => setFinderStep(s => s+1)} className="px-6 py-3 rounded-xl bg-slate-950 text-white font-bold">{finderStep === 4 ? 'Show Matches' : 'Continue →'}</button></div>
+              {finderStep === 1 && <Question title="What will you mainly use it for?" options={['Daily', 'Sport', 'Touring', 'Adventure', 'City']} value={finder.purpose} onChange={v => setFinder({ ...finder, purpose: v as FinderAnswers['purpose'] })} />}
+              {finderStep === 2 && <Question title="How experienced are you?" options={['Beginner', 'Intermediate', 'Experienced']} value={finder.experience} onChange={v => setFinder({ ...finder, experience: v as FinderAnswers['experience'] })} />}
+              {finderStep === 3 && <Question title="What matters most to you?" options={['Performance', 'Economy', 'Safety', 'Comfort']} value={finder.priority} onChange={v => setFinder({ ...finder, priority: v as FinderAnswers['priority'] })} />}
+              {finderStep === 4 && <Question title="Preferred engine range?" options={['Any', '125', '150', '200', '250+']} value={finder.engine} onChange={v => setFinder({ ...finder, engine: v as FinderAnswers['engine'] })} />}
+              <div className="flex justify-between mt-8"><button disabled={finderStep === 1} onClick={() => setFinderStep(s => s - 1)} className="px-5 py-3 rounded-xl border font-bold disabled:opacity-30">Back</button><button onClick={() => setFinderStep(s => s + 1)} className="px-6 py-3 rounded-xl bg-slate-950 text-white font-bold">{finderStep === 4 ? 'Show Matches' : 'Continue →'}</button></div>
             </> : <div><div className="flex justify-between items-center mb-6"><div><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Your Matches</p><h3 className="text-2xl font-black mt-1">Top motorcycles for you</h3></div><button onClick={() => setFinderStep(1)} className="text-sm font-bold text-slate-500">Retake</button></div>
-              <div className="space-y-3">{finderResults.map((r, i) => <Link key={r.bike.id} href={`/bikes/${r.bike.id}`} onClick={() => setShowFinder(false)} className="flex items-center gap-4 border rounded-2xl p-4 hover:border-emerald-400 hover:bg-emerald-50/40 transition"><div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center"><img src={r.bike.image_url} alt="" className="max-w-[90%] max-h-[80%] object-contain" /></div><div className="flex-1"><p className="text-xs font-black text-emerald-600">#{i+1} MATCH</p><p className="font-black">{r.bike.name}</p><p className="text-xs text-slate-500">{r.bike.brand} • {r.bike.engine_capacity} cc • {r.bike.power_hp} HP</p></div><div className="text-right"><p className="text-2xl font-black text-emerald-600">{r.score}%</p><p className="text-[10px] text-slate-400 font-bold uppercase">Match</p></div></Link>)}</div>
+              <div className="space-y-3">{finderResults.map((r, i) => <Link key={r.bike.id} href={`/bikes/${r.bike.id}`} onClick={() => setShowFinder(false)} className="flex items-center gap-4 border rounded-2xl p-4 hover:border-emerald-400 hover:bg-emerald-50/40 transition"><div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center"><img src={r.bike.image_url} alt="" className="max-w-[90%] max-h-[80%] object-contain" /></div><div className="flex-1"><p className="text-xs font-black text-emerald-600">#{i + 1} MATCH</p><p className="font-black">{r.bike.name}</p><p className="text-xs text-slate-500">{r.bike.brand} • {r.bike.engine_capacity} cc • {r.bike.power_hp} HP</p></div><div className="text-right"><p className="text-2xl font-black text-emerald-600">{r.score}%</p><p className="text-[10px] text-slate-400 font-bold uppercase">Match</p></div></Link>)}</div>
             </div>}
           </div>
         </div>
@@ -294,6 +379,6 @@ export default function Home() {
   );
 }
 
-function Question({title, options, value, onChange}: {title:string; options:string[]; value:string; onChange:(v:string)=>void}) {
+function Question({ title, options, value, onChange }: { title: string; options: string[]; value: string; onChange: (v: string) => void }) {
   return <div><h4 className="text-xl sm:text-2xl font-black mb-5">{title}</h4><div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{options.map(o => <button key={o} onClick={() => onChange(o)} className={`p-4 rounded-2xl border text-left font-bold transition ${value === o ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'hover:border-slate-400'}`}>{o}</button>)}</div></div>;
 }
