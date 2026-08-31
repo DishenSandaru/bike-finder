@@ -597,25 +597,18 @@ export default function ComparePage() {
 
       {/* Footer */}
       <footer className="bg-slate-950 text-white mt-12">
-
         <div className="max-w-7xl mx-auto px-4 py-10 text-center text-xs text-slate-500">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <p>© {new Date().getFullYear()} BikeFinder.</p>
 
-          © {new Date().getFullYear()} BikeFinder.
-
-          {' '}Developed with{' '}
-
-          <span className="text-emerald-400">
-            ♥
-          </span>
-
-          {' '}by{' '}
-
-          <b className="text-slate-300">
-            Dishen
-          </b>
-
+            <p className="flex items-center gap-1">
+              Developed with{' '}
+              <span className="text-emerald-400">♥</span>
+              {' '}by{' '}
+              <b className="text-slate-300">Dishen</b>
+            </p>
+          </div>
         </div>
-
       </footer>
 
     </main>
@@ -658,8 +651,8 @@ function Selector({
 
       <div
         className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${accent === 'emerald'
-            ? 'from-emerald-400 to-cyan-400'
-            : 'from-cyan-400 to-emerald-400'
+          ? 'from-emerald-400 to-cyan-400'
+          : 'from-cyan-400 to-emerald-400'
           }`}
       />
 
@@ -754,9 +747,9 @@ function Selector({
           </div>
 
           <div className="flex items-center justify-center gap-2 mt-5">
-            <img 
-              src={`https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/${bike.brand.toLowerCase()}.png`} 
-              alt={bike.brand} 
+            <img
+              src={`https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/${bike.brand.toLowerCase()}.png`}
+              alt={bike.brand}
               className="w-5 h-5 object-contain"
               onError={(e) => {
                 (e.target as HTMLElement).style.display = 'none';
@@ -947,8 +940,8 @@ function CompareRow({
 
       <div
         className={`text-xs sm:text-sm font-bold pr-3 ${w === 1
-            ? 'text-emerald-600'
-            : ''
+          ? 'text-emerald-600'
+          : ''
           }`}
       >
         {display1}
@@ -962,8 +955,8 @@ function CompareRow({
 
       <div
         className={`text-xs sm:text-sm font-bold border-l pl-3 ${w === 2
-            ? 'text-emerald-600'
-            : ''
+          ? 'text-emerald-600'
+          : ''
           }`}
       >
         {display2}
