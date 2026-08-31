@@ -599,7 +599,7 @@ export default function ComparePage() {
       <footer className="bg-slate-950 text-white mt-12">
         <div className="max-w-7xl mx-auto px-4 py-10 text-center text-xs text-slate-500">
           <div className="flex flex-col items-center justify-center gap-2">
-            <p>© {new Date().getFullYear()} BikeFinder.</p>
+            <p>© {new Date().getFullYear()} BikeFinder.All Rights Reserved</p>
 
             <p className="flex items-center gap-1">
               Developed with{' '}
