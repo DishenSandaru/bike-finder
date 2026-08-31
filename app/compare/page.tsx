@@ -753,9 +753,19 @@ function Selector({
 
           </div>
 
-          <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest text-center mt-5">
-            {bike.brand}
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-5">
+            <img 
+              src={`https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/${bike.brand.toLowerCase()}.png`} 
+              alt={bike.brand} 
+              className="w-5 h-5 object-contain"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+              {bike.brand}
+            </p>
+          </div>
 
           <h3 className="text-2xl font-black text-center mt-2">
             {bike.name}

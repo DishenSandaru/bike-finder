@@ -81,7 +81,20 @@ export default function BikeDetailPage() {
             <img src={bike.image_url} alt={bike.name} className="max-h-[420px] max-w-[92%] object-contain mix-blend-multiply drop-shadow-2xl hover:scale-105 transition" />
           </div>
           <div className="p-6 md:p-10 lg:p-12 flex flex-col justify-center">
-            <div className="flex flex-wrap gap-2 mb-5"><span className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-full text-xs font-bold uppercase">{bike.brand}</span><span className="bg-slate-100 px-3 py-1.5 rounded-full text-xs font-bold uppercase">{bike.bike_type || 'Motorcycle'}</span></div>
+            <div className="flex flex-wrap items-center gap-2 mb-5">
+              <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
+                <img 
+                  src={`https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/${bike.brand.toLowerCase()}.png`} 
+                  alt={bike.brand} 
+                  className="w-4 h-4 object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+                {bike.brand}
+              </span>
+              <span className="bg-slate-100 px-3 py-1.5 rounded-full text-xs font-bold uppercase">{bike.bike_type || 'Motorcycle'}</span>
+            </div>
             <p className="text-emerald-600 text-xs font-black uppercase tracking-widest">Bike Specifications</p>
             <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-none mt-3">{bike.name}</h1>
             <p className="text-sm text-slate-400 mt-3">Model Year: <b className="text-slate-600">{bike.model_year || 'N/A'}</b></p>

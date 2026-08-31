@@ -240,8 +240,21 @@ export default function Home() {
                 {bike.image_url ? <img src={bike.image_url} alt={bike.name} className="max-w-[88%] max-h-[74%] object-contain translate-y-4 group-hover:scale-105 transition duration-700 drop-shadow-2xl" /> : <span className="text-6xl opacity-20">🏍️</span>}
               </div>
               <div className="p-6">
-                <p className="text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600">{bike.brand}</p>
-                <h3 className="text-xl font-black mt-2">{bike.name}</h3>
+                
+                {/* Brand Logo and Brand Name */}
+                <div className="flex items-center gap-2 mb-1">
+                  <img 
+                    src={`https://ohazkgtidtbzbdtzaqnl.supabase.co/storage/v1/object/public/bikes/logos/${bike.brand.toLowerCase()}.png`} 
+                    alt={bike.brand} 
+                    className="w-5 h-5 object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                  <p className="text-[10px] font-black uppercase tracking-[0.15em] text-emerald-600">{bike.brand}</p>
+                </div>
+
+                <h3 className="text-xl font-black mt-1">{bike.name}</h3>
                 <div className="grid grid-cols-2 gap-3 mt-5">
                   <div className="bg-slate-50 border rounded-xl p-3"><p className="text-[9px] font-black text-slate-400 uppercase">Engine</p><p className="font-black mt-1">{bike.engine_capacity} <small>cc</small></p></div>
                   <div className="bg-slate-50 border rounded-xl p-3"><p className="text-[9px] font-black text-slate-400 uppercase">Power</p><p className="font-black mt-1">{bike.power_hp} <small>HP</small></p></div>
