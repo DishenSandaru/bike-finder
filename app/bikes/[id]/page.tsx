@@ -17,12 +17,17 @@ interface Bike {
   kerb_weight_kg?: number; fuel_tank_capacity_l?: number; fuel_consumption_kmpl?: string | number; image_url: string;
 }
 
+const FAVORITES_KEY = 'bikefinder_favorites';
+
 export default function BikeDetailPage() {
   const { id } = useParams();
   const [bike, setBike] = useState<Bike | null>(null);
   const [allBikes, setAllBikes] = useState<Bike[]>([]);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -36,17 +41,60 @@ export default function BikeDetailPage() {
       setLoading(false);
     }
     load();
-    try { const savedIds = JSON.parse(localStorage.getItem('bikefinder_favorites') || '[]'); setSaved(savedIds.includes(id)); } catch {}
+    try { const savedIds = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); setSaved(savedIds.includes(id)); } catch {}
   }, [id]);
+
+  // Show a compact action bar on mobile once the hero has scrolled out of view,
+  // and a "back to top" button on larger screens.
+  useEffect(() => {
+    const onScroll = () => {
+      setShowStickyBar(window.scrollY > 480);
+      setShowScrollTop(window.scrollY > 600);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const showToast = (message: string) => setToast(message);
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2400);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const toggleSave = () => {
     if (!bike) return;
     let ids: string[] = [];
-    try { ids = JSON.parse(localStorage.getItem('bikefinder_favorites') || '[]'); } catch {}
-    ids = ids.includes(bike.id) ? ids.filter(x => x !== bike.id) : [...ids, bike.id];
-    localStorage.setItem('bikefinder_favorites', JSON.stringify(ids));
+    try { ids = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'); } catch {}
+    const wasSaved = ids.includes(bike.id);
+    ids = wasSaved ? ids.filter(x => x !== bike.id) : [...ids, bike.id];
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
     setSaved(ids.includes(bike.id));
+    showToast(wasSaved ? `Removed ${bike.name} from favorites` : `Saved ${bike.name} to favorites`);
   };
+
+  const shareBike = async () => {
+    if (!bike) return;
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${bike.brand} ${bike.name} — BikeFinder`, text: `Check out the ${bike.name} specs on BikeFinder`, url });
+        return;
+      } catch {
+        // user cancelled the native share sheet — fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Link copied to clipboard');
+    } catch {
+      showToast('Could not copy link — copy it from the address bar');
+    }
+  };
+
+  const printSpecSheet = () => window.print();
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const score = useMemo(() => bike ? calculateScore(bike) : 0, [bike]);
   const strengths = useMemo(() => bike ? getStrengths(bike) : [], [bike]);
@@ -64,12 +112,12 @@ export default function BikeDetailPage() {
     return allBikes.map(b => ({ b, s: similarity(b) })).sort((x,y) => y.s-x.s).slice(0, 3);
   }, [bike, allBikes]);
 
-  if (loading) return <main className="min-h-screen bg-[#f7f9f8] flex items-center justify-center"><div className="text-center"><div className="w-12 h-12 border-4 border-emerald-100 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4" /><p className="text-slate-500 font-semibold">Loading motorcycle details...</p></div></main>;
+  if (loading) return <BikeDetailSkeleton />;
   if (!bike) return <main className="min-h-screen bg-[#f7f9f8] flex items-center justify-center"><div className="bg-white rounded-3xl p-10 text-center border"><h2 className="text-2xl font-black">Bike Not Found</h2><Link href="/" className="inline-block mt-6 bg-slate-950 text-white px-6 py-3 rounded-xl font-bold">← Back Home</Link></div></main>;
 
-  return <main className="min-h-screen bg-[#f7f9f8] text-slate-900">
+  return <main className="min-h-screen bg-[#f7f9f8] text-slate-900 print:bg-white">
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">
-      <header className="flex justify-between items-center mb-8">
+      <header className="flex justify-between items-center mb-6 print:hidden">
         <Link href="/" className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-emerald-600"><span className="w-9 h-9 rounded-full bg-white border flex items-center justify-center">←</span><span className="hidden sm:inline">Back to All Bikes</span></Link>
         <Link href="/" className="flex items-center gap-2">
           <img 
@@ -81,7 +129,16 @@ export default function BikeDetailPage() {
         </Link>
       </header>
 
-      <section className="bg-white rounded-[2rem] border shadow-xl overflow-hidden mb-10">
+      {/* Breadcrumb */}
+      <nav className="flex items-center flex-wrap gap-1.5 text-xs font-semibold text-slate-400 mb-6 print:hidden">
+        <Link href="/" className="hover:text-emerald-600">Home</Link>
+        <span>/</span>
+        <span className="text-slate-500">{bike.brand}</span>
+        <span>/</span>
+        <span className="text-slate-800">{bike.name}</span>
+      </nav>
+
+      <section className="bg-white rounded-[2rem] border shadow-xl overflow-hidden mb-10 print:shadow-none print:border-0">
         <div className="grid lg:grid-cols-[1.05fr_.95fr]">
           <div className="min-h-[330px] md:min-h-[500px] bg-gradient-to-br from-[#f9fcfa] via-white to-emerald-50/40 flex items-center justify-center p-6 relative">
             <span className="absolute top-6 left-6 bg-white/90 border rounded-full px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Motorcycle Profile</span>
@@ -118,21 +175,23 @@ export default function BikeDetailPage() {
               <div className="bg-slate-50 border rounded-2xl p-4"><p className="text-[10px] uppercase font-bold text-slate-400">Transmission</p><p className="font-black text-sm mt-2">{bike.transmission || 'N/A'}</p></div>
             </div>
 
-            <div className="flex gap-3 mt-6">
-              <button onClick={toggleSave} className={`flex-1 py-4 rounded-2xl font-bold border ${saved ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-white hover:bg-slate-50'}`}>{saved ? '♥ Saved' : '♡ Save Bike'}</button>
-              <Link href={`/compare?bike1=${bike.id}`} className="flex-1 text-center bg-slate-950 hover:bg-emerald-600 text-white py-4 rounded-2xl font-bold">Compare →</Link>
+            <div className="flex flex-wrap gap-3 mt-6 print:hidden">
+              <button onClick={toggleSave} className={`flex-1 min-w-[140px] py-4 rounded-2xl font-bold border ${saved ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-white hover:bg-slate-50'}`}>{saved ? '♥ Saved' : '♡ Save Bike'}</button>
+              <Link href={`/compare?bike1=${bike.id}`} className="flex-1 min-w-[140px] text-center bg-slate-950 hover:bg-emerald-600 text-white py-4 rounded-2xl font-bold">Compare →</Link>
+              <button onClick={shareBike} title="Share this bike" className="w-14 py-4 rounded-2xl font-bold border bg-white hover:bg-slate-50">↗</button>
+              <button onClick={printSpecSheet} title="Print spec sheet" className="w-14 py-4 rounded-2xl font-bold border bg-white hover:bg-slate-50">🖨</button>
             </div>
           </div>
         </div>
       </section>
 
       <section className="grid lg:grid-cols-[1.4fr_.6fr] gap-6 mb-10">
-        <div className="bg-slate-950 text-white rounded-[2rem] p-7 md:p-9">
+        <div className="bg-slate-950 text-white rounded-[2rem] p-7 md:p-9 print:bg-white print:text-slate-900 print:border">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-            <div><p className="text-xs font-black text-emerald-400 uppercase tracking-widest">BikeFinder Score</p><h2 className="text-3xl md:text-4xl font-black mt-2">Overall Rating</h2><p className="text-slate-400 text-sm mt-2">A transparent score based only on technical data available for this bike.</p></div>
+            <div><p className="text-xs font-black text-emerald-400 uppercase tracking-widest print:text-emerald-600">BikeFinder Score</p><h2 className="text-3xl md:text-4xl font-black mt-2">Overall Rating</h2><p className="text-slate-400 text-sm mt-2 print:text-slate-500">A transparent score based only on technical data available for this bike.</p></div>
             <div className="w-28 h-28 rounded-full border-8 border-emerald-500/30 flex items-center justify-center"><span className="text-4xl font-black">{score}<small className="text-base text-slate-400">/10</small></span></div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">{[['Performance', performanceScore(bike)],['Safety', safetyScore(bike)],['Practicality', practicalityScore(bike)],['Features', featureScore(bike)]].map(([n,v]) => <div key={n as string} className="bg-white/5 rounded-2xl p-4"><p className="text-xs text-slate-400">{n}</p><p className="text-2xl font-black mt-1">{v}<small className="text-xs text-slate-500">/10</small></p><div className="h-1.5 bg-white/10 rounded-full mt-3"><div className="h-full bg-emerald-500 rounded-full" style={{width:`${Number(v)*10}%`}} /></div></div>)}</div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8">{[['Performance', performanceScore(bike)],['Safety', safetyScore(bike)],['Practicality', practicalityScore(bike)],['Features', featureScore(bike)]].map(([n,v]) => <div key={n as string} className="bg-white/5 rounded-2xl p-4 print:bg-slate-50 print:border"><p className="text-xs text-slate-400 print:text-slate-500">{n}</p><p className="text-2xl font-black mt-1">{v}<small className="text-xs text-slate-500">/10</small></p><div className="h-1.5 bg-white/10 rounded-full mt-3 print:bg-slate-200"><div className="h-full bg-emerald-500 rounded-full" style={{width:`${Number(v)*10}%`}} /></div></div>)}</div>
         </div>
         <div className="bg-white border rounded-[2rem] p-7"><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Quick Take</p><h3 className="text-2xl font-black mt-2">At a glance</h3><div className="mt-5 space-y-3">{strengths.slice(0,3).map(x => <p key={x} className="text-sm font-semibold"><span className="text-emerald-500 mr-2">✓</span>{x}</p>)}</div></div>
       </section>
@@ -144,17 +203,86 @@ export default function BikeDetailPage() {
         <SpecCard title="Electricals & Smart Features" icon="⚡" description="Lighting, electronics and connectivity"><SpecItem label="Instrument Console" value={bike.cluster}/><SpecItem label="Headlamp" value={bike.headlamp}/><SpecItem label="Tail Lamp" value={bike.tail_lamp}/><SpecItem label="Turn Signal Lamp" value={bike.turn_signal_lamp}/><SpecItem label="Battery" value={bike.battery}/><SpecItem label="Bluetooth Connectivity" value={bike.bluetooth_connectivity}/><SpecItem label="Traction Control" value={bike.traction_control}/><SpecItem label="Muffler" value={bike.muffler}/></SpecCard>
       </section>
 
-      <section className="grid md:grid-cols-2 gap-6 mb-12">
+      <section className="grid md:grid-cols-2 gap-6 mb-12 print:hidden">
         <div className="bg-white border rounded-[2rem] p-7"><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Strengths</p><h2 className="text-2xl font-black mt-2">What stands out</h2><div className="mt-5 space-y-3">{strengths.map(x => <div key={x} className="p-4 bg-emerald-50/60 border border-emerald-100 rounded-2xl text-sm font-semibold"><span className="text-emerald-600 mr-2">✓</span>{x}</div>)}</div></div>
         <div className="bg-white border rounded-[2rem] p-7"><p className="text-xs font-black text-slate-500 uppercase tracking-widest">Considerations</p><h2 className="text-2xl font-black mt-2">Things to know</h2><div className="mt-5 space-y-3">{considerations.map(x => <div key={x} className="p-4 bg-slate-50 border rounded-2xl text-sm font-semibold"><span className="text-slate-400 mr-2">•</span>{x}</div>)}</div></div>
       </section>
 
-      <section className="mb-12"><div className="flex items-end justify-between mb-6"><div><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Smart Matching</p><h2 className="text-3xl md:text-4xl font-black mt-2">Similar Bikes</h2></div><Link href="/" className="text-sm font-bold text-emerald-700">Explore all →</Link></div><div className="grid md:grid-cols-3 gap-5">{similar.map(({b,s}) => <Link key={b.id} href={`/bikes/${b.id}`} className="bg-white border rounded-3xl p-4 hover:-translate-y-1 hover:shadow-xl transition"><div className="h-44 bg-slate-50 rounded-2xl flex items-center justify-center"><img src={b.image_url} alt={b.name} className="max-w-[90%] max-h-[85%] object-contain"/></div><div className="p-2"><p className="text-[10px] font-black text-emerald-600 uppercase">{s}% similar</p><h3 className="font-black text-lg mt-1">{b.name}</h3><p className="text-xs text-slate-400 mt-1">{b.brand} • {b.engine_capacity} cc • {b.power_hp} HP</p></div></Link>)}</div></section>
+      <section className="mb-12 print:hidden"><div className="flex items-end justify-between mb-6"><div><p className="text-xs font-black text-emerald-600 uppercase tracking-widest">Smart Matching</p><h2 className="text-3xl md:text-4xl font-black mt-2">Similar Bikes</h2></div><Link href="/" className="text-sm font-bold text-emerald-700">Explore all →</Link></div><div className="grid md:grid-cols-3 gap-5">{similar.map(({b,s}) => <Link key={b.id} href={`/bikes/${b.id}`} className="bg-white border rounded-3xl p-4 hover:-translate-y-1 hover:shadow-xl transition"><div className="h-44 bg-slate-50 rounded-2xl flex items-center justify-center"><img src={b.image_url} alt={b.name} className="max-w-[90%] max-h-[85%] object-contain"/></div><div className="p-2"><p className="text-[10px] font-black text-emerald-600 uppercase">{s}% similar</p><h3 className="font-black text-lg mt-1">{b.name}</h3><p className="text-xs text-slate-400 mt-1">{b.brand} • {b.engine_capacity} cc • {b.power_hp} HP</p></div></Link>)}</div></section>
 
-      <section className="bg-slate-950 text-white rounded-[2rem] p-8 md:p-12 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6"><div><p className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Still Deciding?</p><h3 className="text-2xl md:text-3xl font-black mt-2">Compare {bike.name} with another bike</h3><p className="text-slate-400 text-sm mt-2">See performance, safety, dimensions and features side by side.</p></div><Link href={`/compare?bike1=${bike.id}`} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-7 py-4 rounded-2xl text-center">Start Comparing →</Link></section>
-      <footer className="border-t py-7 text-center text-xs text-slate-500">© {new Date().getFullYear()} BikeFinder. Developed with <span className="text-emerald-500">♥</span> by <b>Dishen</b></footer>
+      <section className="bg-slate-950 text-white rounded-[2rem] p-8 md:p-12 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6 print:hidden"><div><p className="text-emerald-400 text-xs font-bold uppercase tracking-widest">Still Deciding?</p><h3 className="text-2xl md:text-3xl font-black mt-2">Compare {bike.name} with another bike</h3><p className="text-slate-400 text-sm mt-2">See performance, safety, dimensions and features side by side.</p></div><Link href={`/compare?bike1=${bike.id}`} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-7 py-4 rounded-2xl text-center">Start Comparing →</Link></section>
+      <footer className="border-t py-7 text-center text-xs text-slate-500 print:hidden">© {new Date().getFullYear()} BikeFinder. Developed with <span className="text-emerald-500">♥</span> by <b>Dishen</b></footer>
     </div>
+
+    {/* Toast notification */}
+    {toast && (
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-[200] bg-slate-950 text-white text-sm font-semibold px-5 py-3.5 rounded-2xl shadow-2xl print:hidden">
+        {toast}
+      </div>
+    )}
+
+    {/* Mobile sticky action bar */}
+    {showStickyBar && (
+      <div className="lg:hidden print:hidden fixed bottom-0 inset-x-0 z-[150] bg-white/95 backdrop-blur-xl border-t shadow-2xl px-4 py-3 flex gap-2">
+        <button onClick={toggleSave} className={`flex-1 py-3 rounded-xl font-bold text-sm border ${saved ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : 'bg-white'}`}>{saved ? '♥ Saved' : '♡ Save'}</button>
+        <Link href={`/compare?bike1=${bike.id}`} className="flex-1 text-center bg-slate-950 text-white py-3 rounded-xl font-bold text-sm">Compare →</Link>
+        <button onClick={shareBike} className="w-12 rounded-xl border bg-white font-bold">↗</button>
+      </div>
+    )}
+
+    {/* Back to top (desktop) */}
+    {showScrollTop && (
+      <button
+        onClick={scrollToTop}
+        title="Back to top"
+        className="hidden lg:flex print:hidden fixed bottom-6 right-6 z-[150] w-12 h-12 rounded-full bg-slate-950 text-white shadow-2xl hover:bg-emerald-600 transition items-center justify-center font-bold"
+      >
+        ↑
+      </button>
+    )}
   </main>;
+}
+
+function BikeDetailSkeleton() {
+  return (
+    <main className="min-h-screen bg-[#f7f9f8]">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 animate-pulse">
+        <div className="flex justify-between items-center mb-6">
+          <div className="h-9 w-32 bg-white border rounded-full" />
+          <div className="h-11 w-40 bg-white border rounded-xl" />
+        </div>
+        <div className="h-3 w-56 bg-slate-200/60 rounded-full mb-6" />
+        <div className="bg-white rounded-[2rem] border shadow-xl overflow-hidden mb-10">
+          <div className="grid lg:grid-cols-[1.05fr_.95fr]">
+            <div className="min-h-[330px] md:min-h-[500px] bg-slate-100" />
+            <div className="p-6 md:p-10 lg:p-12 space-y-4">
+              <div className="h-6 w-40 bg-slate-100 rounded-full" />
+              <div className="h-12 w-3/4 bg-slate-100 rounded-2xl" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+                {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-16 bg-slate-100 rounded-xl" />)}
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="h-16 bg-slate-100 rounded-2xl" />
+                <div className="h-16 bg-slate-100 rounded-2xl" />
+              </div>
+              <div className="flex gap-3 mt-4">
+                <div className="h-14 flex-1 bg-slate-100 rounded-2xl" />
+                <div className="h-14 flex-1 bg-slate-100 rounded-2xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid lg:grid-cols-[1.4fr_.6fr] gap-6 mb-10">
+          <div className="h-52 bg-white border rounded-[2rem]" />
+          <div className="h-52 bg-white border rounded-[2rem]" />
+        </div>
+        <div className="grid lg:grid-cols-2 gap-5 md:gap-6">
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-64 bg-white border rounded-3xl" />)}
+        </div>
+        <p className="text-center text-slate-400 font-semibold text-sm mt-10">Loading motorcycle details…</p>
+      </div>
+    </main>
+  );
 }
 
 function fmt(v: string|number|undefined, unit: string) { return v !== undefined && v !== null && v !== '' ? `${v} ${unit}` : '-'; }
@@ -166,5 +294,5 @@ function featureScore(b: Bike) { let s=5; if(b.bluetooth_connectivity)s+=1.5; if
 function getStrengths(b: Bike) { const a:string[]=[]; if(Number(b.power_hp)>=20)a.push('Strong power output for its class.'); if(Number(b.torque_nm)>=18)a.push('Healthy torque for acceleration and everyday riding.'); if(/yes|dual|single|standard|equipped/i.test(String(b.abs||'')))a.push('ABS-equipped braking system.'); if(Number(b.kerb_weight_kg)>0 && Number(b.kerb_weight_kg)<=170)a.push('Relatively manageable kerb weight.'); if(parseFloat(String(b.fuel_consumption_kmpl||'').replace(/[^\d.]/g,''))>=40)a.push('Strong reported fuel economy.'); if(b.traction_control)a.push('Traction control is listed.'); return a.length?a:['Useful technical specification coverage for comparison.']; }
 function getConsiderations(b: Bike) { const a:string[]=[]; if(Number(b.kerb_weight_kg)>=190)a.push('Kerb weight is on the heavier side.'); if(Number(b.saddle_height_mm)>=830)a.push('Higher seat height may not suit every rider.'); if(!b.abs)a.push('ABS information is not available in the current database.'); if(!b.traction_control)a.push('Traction-control information is not listed.'); return a.length?a:['Check the full specification sheet for details before making a decision.']; }
 function QuickStat({label,value,highlight=false}:{label:string;value:string;highlight?:boolean}) { return <div className="bg-slate-50 border rounded-xl p-3 text-center"><p className="text-[9px] uppercase tracking-wide text-slate-400 font-bold">{label}</p><p className={`text-sm font-black mt-1 ${highlight?'text-emerald-600':'text-slate-800'}`}>{value}</p></div>; }
-function SpecCard({title,icon,description,children}:{title:string;icon:string;description:string;children:React.ReactNode}) { return <div className="bg-white rounded-3xl border shadow-md overflow-hidden"><div className="p-6 border-b bg-gradient-to-r from-white to-emerald-50/30"><div className="flex gap-4"><div className="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center">{icon}</div><div><h3 className="font-black">{title}</h3><p className="text-xs text-slate-400 mt-1">{description}</p></div></div></div><div className="divide-y">{children}</div></div>; }
+function SpecCard({title,icon,description,children}:{title:string;icon:string;description:string;children:React.ReactNode}) { return <div className="bg-white rounded-3xl border shadow-md overflow-hidden print:shadow-none print:break-inside-avoid"><div className="p-6 border-b bg-gradient-to-r from-white to-emerald-50/30"><div className="flex gap-4"><div className="w-11 h-11 rounded-2xl bg-emerald-50 flex items-center justify-center">{icon}</div><div><h3 className="font-black">{title}</h3><p className="text-xs text-slate-400 mt-1">{description}</p></div></div></div><div className="divide-y">{children}</div></div>; }
 function SpecItem({label,value}:{label:string;value?:string|number|null}) { return <div className="flex justify-between gap-5 px-6 py-4 hover:bg-slate-50"><span className="text-xs sm:text-sm text-slate-500">{label}</span><span className="text-xs sm:text-sm font-bold text-right max-w-[58%] break-words">{value !== undefined && value !== null && value !== '' ? value : '-'}</span></div>; }

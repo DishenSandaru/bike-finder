@@ -36,8 +36,11 @@ interface Bike {
   image_url: string;
 }
 
+const FAVORITES_KEY = 'bikefinder_favorites';
+
 export default function ComparePage() {
   const [bikes, setBikes] = useState<Bike[]>([]);
+  const [loading, setLoading] = useState(true);
   const [bike1Id, setBike1Id] = useState('');
   const [bike2Id, setBike2Id] = useState('');
 
@@ -49,17 +52,22 @@ export default function ComparePage() {
 
   const [mobile, setMobile] = useState(false);
 
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [toast, setToast] = useState<string | null>(null);
+
   const r1 = useRef<HTMLDivElement>(null);
   const r2 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchBikes() {
+      setLoading(true);
       const { data, error } = await supabase
         .from('bikes')
         .select('*');
 
       if (error) {
         console.error('Error loading bikes:', error);
+        setLoading(false);
         return;
       }
 
@@ -85,6 +93,8 @@ export default function ComparePage() {
             : loadedBikes[Math.min(1, loadedBikes.length - 1)].id
         );
       }
+
+      setLoading(false);
     }
 
     fetchBikes();
@@ -116,8 +126,64 @@ export default function ComparePage() {
     };
   }, []);
 
+  // Load favorites saved from the home page (shared across the site).
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(FAVORITES_KEY);
+      if (raw) setFavorites(JSON.parse(raw));
+    } catch {
+      // ignore malformed storage
+    }
+  }, []);
+
+  // Keep the URL shareable: reflect the current pair as query params.
+  useEffect(() => {
+    if (!bike1Id || !bike2Id) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('bike1', bike1Id);
+    url.searchParams.set('bike2', bike2Id);
+    window.history.replaceState({}, '', url.toString());
+  }, [bike1Id, bike2Id]);
+
+  const showToast = (message: string) => setToast(message);
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2400);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   const b1 = bikes.find(b => b.id === bike1Id);
   const b2 = bikes.find(b => b.id === bike2Id);
+
+  const swapBikes = () => {
+    setBike1Id(bike2Id);
+    setBike2Id(bike1Id);
+  };
+
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showToast('Comparison link copied to clipboard');
+    } catch {
+      showToast('Could not copy link — copy it from the address bar');
+    }
+  };
+
+  const printComparison = () => window.print();
+
+  const addBothToFavorites = () => {
+    if (!b1 || !b2) return;
+    setFavorites(prev => {
+      const next = Array.from(new Set([...prev, b1.id, b2.id]));
+      try {
+        window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
+      } catch {
+        // ignore storage failures
+      }
+      return next;
+    });
+    showToast(`Saved ${b1.name} and ${b2.name} to favorites`);
+  };
 
   const sug1 = bikes
     .filter(
@@ -183,10 +249,10 @@ export default function ComparePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f7f9f8] text-slate-900 overflow-x-hidden">
+    <main className="min-h-screen bg-[#f7f9f8] text-slate-900 overflow-x-hidden print:bg-white">
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/80 backdrop-blur-xl print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <div className="h-20 flex items-center justify-between">
@@ -265,7 +331,7 @@ export default function ComparePage() {
       </header>
 
       {/* Hero */}
-      <section className="pt-16 sm:pt-20 pb-12">
+      <section className="pt-16 sm:pt-20 pb-12 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
           <span className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2 text-xs font-bold text-slate-600 shadow-sm">
@@ -291,42 +357,91 @@ export default function ComparePage() {
       </section>
 
       {/* Selectors */}
-      <section className="pb-16">
+      <section className="pb-8 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="grid lg:grid-cols-2 gap-6">
+          {loading ? (
+            <div className="grid lg:grid-cols-2 gap-6">
+              {[0, 1].map(i => (
+                <div key={i} className="bg-white border rounded-[2rem] p-5 sm:p-7 shadow-xl animate-pulse">
+                  <div className="h-3 w-24 bg-slate-100 rounded-full" />
+                  <div className="h-6 w-40 bg-slate-100 rounded-full mt-3" />
+                  <div className="h-12 bg-slate-100 rounded-2xl mt-6" />
+                  <div className="h-64 bg-slate-100 rounded-3xl mt-3" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="grid lg:grid-cols-2 gap-6">
 
-            <Selector
-              title="Motorcycle One"
-              bike={b1}
-              bikes={bikes}
-              value={bike1Id}
-              setValue={setBike1Id}
-              query={q1}
-              setQuery={setQ1}
-              show={s1}
-              setShow={setS1}
-              suggestions={sug1}
-              refEl={r1}
-              accent="emerald"
-            />
+                <Selector
+                  title="Motorcycle One"
+                  bike={b1}
+                  bikes={bikes}
+                  value={bike1Id}
+                  setValue={setBike1Id}
+                  query={q1}
+                  setQuery={setQ1}
+                  show={s1}
+                  setShow={setS1}
+                  suggestions={sug1}
+                  refEl={r1}
+                  accent="emerald"
+                  isFavorite={!!b1 && favorites.includes(b1.id)}
+                />
 
-            <Selector
-              title="Motorcycle Two"
-              bike={b2}
-              bikes={bikes}
-              value={bike2Id}
-              setValue={setBike2Id}
-              query={q2}
-              setQuery={setQ2}
-              show={s2}
-              setShow={setS2}
-              suggestions={sug2}
-              refEl={r2}
-              accent="cyan"
-            />
+                <Selector
+                  title="Motorcycle Two"
+                  bike={b2}
+                  bikes={bikes}
+                  value={bike2Id}
+                  setValue={setBike2Id}
+                  query={q2}
+                  setQuery={setQ2}
+                  show={s2}
+                  setShow={setS2}
+                  suggestions={sug2}
+                  refEl={r2}
+                  accent="cyan"
+                  isFavorite={!!b2 && favorites.includes(b2.id)}
+                />
 
-          </div>
+              </div>
+
+              {/* Toolbar */}
+              <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+                <button
+                  onClick={swapBikes}
+                  disabled={!b1 || !b2}
+                  className="px-5 py-3 rounded-xl bg-white border font-bold text-sm hover:border-emerald-500 hover:text-emerald-600 disabled:opacity-40 transition"
+                >
+                  ⇄ Swap Motorcycles
+                </button>
+                <button
+                  onClick={copyShareLink}
+                  disabled={!b1 || !b2}
+                  className="px-5 py-3 rounded-xl bg-white border font-bold text-sm hover:border-emerald-500 hover:text-emerald-600 disabled:opacity-40 transition"
+                >
+                  🔗 Copy Share Link
+                </button>
+                <button
+                  onClick={printComparison}
+                  disabled={!b1 || !b2}
+                  className="px-5 py-3 rounded-xl bg-white border font-bold text-sm hover:border-emerald-500 hover:text-emerald-600 disabled:opacity-40 transition"
+                >
+                  🖨 Print / Save PDF
+                </button>
+                <button
+                  onClick={addBothToFavorites}
+                  disabled={!b1 || !b2}
+                  className="px-5 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-sm hover:bg-emerald-100 disabled:opacity-40 transition"
+                >
+                  ♥ Save Both to Favorites
+                </button>
+              </div>
+            </>
+          )}
 
         </div>
       </section>
@@ -338,12 +453,12 @@ export default function ComparePage() {
           <section className="pb-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-              <div className="bg-slate-950 text-white rounded-[2rem] p-7 md:p-10">
+              <div className="bg-slate-950 text-white rounded-[2rem] p-7 md:p-10 print:bg-white print:text-slate-900 print:border">
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
 
                   <div>
-                    <p className="text-xs font-black text-emerald-400 uppercase tracking-widest">
+                    <p className="text-xs font-black text-emerald-400 uppercase tracking-widest print:text-emerald-600">
                       Quick Verdict
                     </p>
 
@@ -351,7 +466,7 @@ export default function ComparePage() {
                       Which one leads?
                     </h2>
 
-                    <p className="text-slate-400 text-sm mt-2">
+                    <p className="text-slate-400 text-sm mt-2 print:text-slate-500">
                       Category winners are calculated from the displayed
                       technical data.
                     </p>
@@ -384,9 +499,9 @@ export default function ComparePage() {
                   ].map(([label, w]) => (
                     <div
                       key={label as string}
-                      className="bg-white/5 rounded-2xl p-4"
+                      className="bg-white/5 rounded-2xl p-4 print:bg-slate-50 print:border"
                     >
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-400 print:text-slate-500">
                         {label}
                       </p>
 
@@ -412,11 +527,11 @@ export default function ComparePage() {
           {/* Detailed Analysis */}
           <section
             id="analysis"
-            className="py-16 bg-white/60 border-y scroll-mt-24"
+            className="py-16 bg-white/60 border-y scroll-mt-24 print:bg-white print:border-0 print:py-0"
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-              <div className="text-center mb-10">
+              <div className="text-center mb-10 print:hidden">
 
                 <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">
                   Detailed Analysis
@@ -433,12 +548,12 @@ export default function ComparePage() {
 
               </div>
 
-              <div className="bg-white border rounded-[2rem] overflow-hidden shadow-xl">
+              <div className="bg-white border rounded-[2rem] overflow-hidden shadow-xl print:shadow-none print:rounded-none">
 
                 {/* Table Header */}
-                <div className="grid grid-cols-3 bg-slate-950 text-white p-5 sm:p-7">
+                <div className="grid grid-cols-3 bg-slate-950 text-white p-5 sm:p-7 print:bg-slate-100 print:text-slate-900">
 
-                  <div className="font-black text-xs sm:text-sm uppercase text-slate-400">
+                  <div className="font-black text-xs sm:text-sm uppercase text-slate-400 print:text-slate-500">
                     Specification
                   </div>
 
@@ -596,7 +711,7 @@ export default function ComparePage() {
       )}
 
       {/* Footer */}
-      <footer className="bg-slate-950 text-white mt-12">
+      <footer className="bg-slate-950 text-white mt-12 print:hidden">
         <div className="max-w-7xl mx-auto px-4 py-10 text-center text-xs text-slate-500">
           <div className="flex flex-col items-center justify-center gap-2">
             <p>© {new Date().getFullYear()} BikeFinder.All Rights Reserved</p>
@@ -610,6 +725,13 @@ export default function ComparePage() {
           </div>
         </div>
       </footer>
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-[200] bg-slate-950 text-white text-sm font-semibold px-5 py-3.5 rounded-2xl shadow-2xl print:hidden">
+          {toast}
+        </div>
+      )}
 
     </main>
   );
@@ -632,6 +754,7 @@ function Selector({
   suggestions,
   refEl,
   accent,
+  isFavorite,
 }: {
   title: string;
   bike?: Bike;
@@ -645,6 +768,7 @@ function Selector({
   suggestions: Bike[];
   refEl: React.RefObject<HTMLDivElement | null>;
   accent: 'emerald' | 'cyan';
+  isFavorite?: boolean;
 }) {
   return (
     <div className="bg-white border rounded-[2rem] p-5 sm:p-7 shadow-xl relative overflow-visible">
@@ -656,13 +780,20 @@ function Selector({
           }`}
       />
 
-      <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">
-        {title}
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-black text-emerald-600 uppercase tracking-widest">
+          {title}
+        </p>
+        {isFavorite && <span className="text-rose-500 text-xs font-bold">♥ Saved</span>}
+      </div>
 
       <h2 className="text-2xl font-black mt-2">
         Choose a motorcycle
       </h2>
+
+      {bikes.length === 0 && (
+        <p className="text-sm text-slate-400 mt-2">Loading motorcycles…</p>
+      )}
 
       {/* Search */}
       <div
@@ -917,6 +1048,8 @@ function CompareRow({
     );
   }
 
+  const isEven = numeric && w === 0;
+
   const display1 =
     v1 !== undefined &&
       v1 !== null &&
@@ -932,7 +1065,7 @@ function CompareRow({
       : '-';
 
   return (
-    <div className="grid grid-cols-3 px-4 sm:px-8 py-4 border-t hover:bg-emerald-50/40 transition">
+    <div className="grid grid-cols-3 px-4 sm:px-8 py-4 border-t hover:bg-emerald-50/40 transition print:hover:bg-transparent">
 
       <div className="text-xs sm:text-sm text-slate-500 font-bold pr-3">
         {label}
@@ -966,6 +1099,12 @@ function CompareRow({
             Best
           </span>
         )}
+
+        {isEven && (
+          <span className="ml-2 text-[9px] uppercase text-slate-400">
+            Even
+          </span>
+        )}
       </div>
 
     </div>
@@ -982,9 +1121,9 @@ function RowSection({
   title: string;
 }) {
   return (
-    <div className="bg-slate-950 px-4 sm:px-8 py-4">
+    <div className="bg-slate-950 px-4 sm:px-8 py-4 print:bg-slate-100">
 
-      <span className="text-[10px] sm:text-xs font-black text-emerald-400 uppercase tracking-widest">
+      <span className="text-[10px] sm:text-xs font-black text-emerald-400 uppercase tracking-widest print:text-emerald-700">
         {title}
       </span>
 
